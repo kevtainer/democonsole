@@ -3,7 +3,6 @@
 # Prerequisites
 ## softwate installation
 <li> nginx
-<br>sudo apt-get install nginx
 <li> docker
 <li> docker-compose
 
