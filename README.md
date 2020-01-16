@@ -1,7 +1,7 @@
 # democonsole
 
 ## Requrements
-<br>python3
+python3
 <br>nginx
 <br>uwsgi
 <br>docker
