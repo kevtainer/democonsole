@@ -1,17 +1,20 @@
 # democonsole
 
 # Prerequisites
-## installation
-<br>nginx
-<br>uwsgi
-<br>docker
-<br>docker-compose
+## softwate installation
+### nginx
+sudo apt-get install nginx
+### docker
+### docker-compose
+
+# Steps
 
 ## Download robot-shop
 git clone https://github.com/instana/robot-shop.git
 
+## Download this repository
+git clone https://github.com/ShaunPark/democonsole.git
 
-# Steps
 ## update
 sudo apt-get update
 
