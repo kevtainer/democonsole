@@ -1,13 +1,13 @@
 [Unit]
-Description="uWSGI server instance for my_app"
+Description="uWSGI server instance for democonsole"
 After=network.target
 
 [Service]
 User=root
 Group=root
-WorkingDirectory=/home/centos/demo/app/
+WorkingDirectory=/home/centos/democonsole/app/
 Environment=FLASK_ENV=test
-ExecStart=/usr/local/bin/uwsgi --ini /home/centos/demo/app/app.ini
+ExecStart=/usr/local/bin/uwsgi --ini /home/centos/democonsole/app/app.ini
 
 [Install]
 WantedBy=multi-user.target
