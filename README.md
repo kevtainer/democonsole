@@ -1,8 +1,7 @@
 # democonsole
 
-# Requrements
+# Prerequisites
 ## installation
-python3
 <br>nginx
 <br>uwsgi
 <br>docker
