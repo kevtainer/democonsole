@@ -1,6 +1,6 @@
 # democonsole
 
 1. Requrements
-python3
-nginx
-uwsgi
+<br>python3
+<br>nginx
+<br>uwsgi
