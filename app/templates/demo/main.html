@@ -1,0 +1,360 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<main role="main" class="container">
+	<div class="my-3 p-3">
+		<div class="pb-2 my-2">
+			<img src="{{ url_for('static', filename='INSTANA.png')}}"> Demo console
+		</div>
+		<div class="card mb-3">
+			<div class="card-header">
+				<div class="row">
+					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+						<rect width="100%" height="100%" fill="#88a8eb"/>
+					</svg>
+					<p class="media-body mb-0 small lh-125">
+						<strong class="d-block text-gray-dark">Check Demo Environment</strong>
+						Check whether Docker and Docker-compose are intallled. And run docker daemon.
+						<br>
+						<br>Command : sudo systemctl start docker
+					</p>
+					<div>
+						<button id="btnDocker" type="button" class="btn btn-success btn-sm" onclick="startDocker(event)">Start</button>
+					</div>
+				</div>
+			</div>
+			<div class="card-body" id="result">
+				<table id="dTable" class="table table-sm">
+					<thead>
+						<th data-field="comp" class="small">Component</th>
+						<th data-field="ver" class="small">Version</th>
+						<th data-field="status" class="small" data-formatter="statusFormatter">Status</th>
+					</thead>
+					<tbody class="small">
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="card mb-3">
+			<div class="card-header">
+				<div class="row">
+					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+						<rect width="100%" height="100%" fill="#88a8eb"/>
+					</svg>
+					<p class="media-body mb-0 small lh-125">
+						<strong class="d-block text-gray-dark">Manage Demo Applications</strong>
+						Start/Stop Robotshop Demo Applications
+						<br>
+						<br>Command : sudo docker-compose up -d 						
+						<br><span style="opacity: 0;">Command :</span> sudo docker-compose down
+					</p>
+					<div>
+						<button type="button" class="btn btn-success btn-sm" onclick="docStart(event)">Start</button>&nbsp;
+						<button type="button" class="btn btn-danger btn-sm" onclick="docStop(event)">Stop</button>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<table id="psTable" class="table table-sm">
+					<thead>
+						<th data-field="ps" class="small">Component</th>
+						<th data-field="status" class="small"  data-formatter="statusFormatter">Status</th>
+					</thead>
+					<tbody class="small">
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="card mb-3">
+			<div class="card-header">
+				<div class="row">
+					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+						<rect width="100%" height="100%" fill="#88a8eb"/>
+					</svg>
+					<p class="media-body mb-0 small lh-125">
+						<strong class="d-block text-gray-dark">Install Instana Agent</strong>
+						Install Instana agent with an agent key / Remove Instana agent from the host.
+					</p>
+					<div >
+						<input id="agentkey" type="password" class="pl-2 align-middle" placeholder="Agent Key">
+						<button id="agentBtn" type="button" class="btn btn-primary btn-sm align-middle" onclick="installAgent(event)">Install</button>
+						<button id="agentDelBtn" type="button" class="btn btn-secondary btn-sm align-middle" onclick="removeAgent(event)">Remove Agent</button>
+					</div>
+				</div>
+				<div class="row">
+					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+						<rect width="100%" height="100%" fill="#f8f8f8"/>
+					</svg>
+					<p class="media-body mb-0 small lh-125">
+						<br>Command : curl -o setup_agent.sh https://setup.instana.io/agent && chmod 700 ./setup_agent.sh && sudo ./setup_agent.sh -a &lt;AGENT_KEY&gt;  -t dynamic -l us
+						<br><span style="opacity: 0;">Command :</span> sudo yum -y remove instana-agent-dynamic.x86_64
+					</p>
+				</div>
+			</div>
+			<div class="card-body">
+				<div class="input-group mb-3">
+					<input id="endpoint" type="text" class="form-control" aria-label="Text input with checkbox" placeholder="Enter end point for On-premise backend">
+				</div>
+			</div>
+		</div>
+		<div class="card mb-3">
+			<div class="card-header">
+				<div class="row">
+					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+						<rect width="100%" height="100%" fill="#88a8eb"/>
+					</svg>
+					<p class="media-body mb-0 small lh-125">
+						<strong class="d-block text-gray-dark">Manage Instana Agent</strong>
+						Start Instana agent to monitor automatically / Stop the agent
+						<br>
+						<br>Command : sudo /opt/instana/agent/bin/start
+						<br><span style="opacity: 0;">Command :</span> sudo /opt/instana/agent/bin/stop
+					</p>
+					<div>
+						<button id="btnAgStart" type="button" class="btn btn-success btn-sm" onclick="startAgent(event)">Start</button>
+						<button id="btnAgStop"  type="button" class="btn btn-danger btn-sm" onclick="stopAgent(event)">Stop</button>
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<table id="agTable" class="table table-sm">
+					<thead>
+						<th data-field="ps" class="small">Component</th>
+						<th data-field="status" class="small"  data-formatter="statusFormatter">Status</th>
+					</thead>
+					<tbody class="small">
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="card mb-3">
+			<div class="card-header">
+				<div class="row">
+					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+						<rect width="100%" height="100%" fill="#88a8eb"/>
+					</svg>
+					<p class="media-body mb-0 small lh-125">
+						<strong class="d-block text-gray-dark">Manage Load Generator</strong>
+						Start the load generator / Stop the load generator
+						<br>
+						<br>Command : sudo docker run -it -d --name loadgen --rm --network=host -e HOST=http://localhost:8080 robotshop/rs-load
+						<br><span style="opacity: 0;">Command :</span> sudo docker stop loadgen
+					</p>
+					<div>
+						<button id="btnldStart" type="button" class="btn btn-primary btn-sm" onclick="startloadgen(event)">Generate</button>
+						<button id="btnldStop"  type="button" class="btn btn-secondary btn-sm" onclick="stoploadgen(event)">Stop</button>
+
+					</div>
+				</div>
+			</div>
+			<div class="card-body">
+				<table id="ldTable" class="table table-sm">
+					<thead>
+						<th data-field="ps" class="small">Component</th>
+						<th data-field="status" class="small"  data-formatter="statusFormatter">Status</th>
+					</thead>
+					<tbody class="small">
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+	</div>
+</main>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalText">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+	<script>
+		function init() {
+			getStatus(null);
+		}
+		function getStatus(e) {
+			if ( e ) {
+				e.preventDefault();
+			}
+			fetchUrl('/docker', 'Loading...');
+		}
+		function startDocker(e) {
+			$('#dTable').bootstrapTable('destroy');
+			fetchUrl('/dockerstart', 'Starting Docker...');
+		}
+		function docStart(e) {
+			e.preventDefault();
+			$('#psTable').bootstrapTable('destroy');
+			fetchUrl('/appstart', 'Starting applications...');
+		}
+		function docStop(e) {
+			e.preventDefault();
+			$('#psTable').bootstrapTable('destroy');
+			fetchUrl('/appstop', 'Stopping applications...');
+		}
+		function installAgent(e) {
+			if(e) {
+				e.preventDefault();
+			}
+			var param = new Object();
+			param.key = $('#agentkey').val();
+			param.endpoint = $('#endpoint').val();
+			if (param.key.length < 22) {
+				$('#agentkey').focus();
+			} else {
+				fetchUrlPost('/installagent', 'Installing Instana agent...',  param);
+			}
+		}
+		function removeAgent(e) {
+			e.preventDefault();
+			fetchUrl('/removeagent', 'Uninstalling Instana agent...');
+		}
+
+		function startAgent(e) {
+			e.preventDefault();
+			$('#agTable').bootstrapTable('destroy');
+			fetchUrl('/startagent', 'Starting Instana agent...');
+		}
+		function stopAgent(e) {
+			e.preventDefault();
+			$('#agTable').bootstrapTable('destroy');
+			fetchUrl('/stopagent', 'Stopping Instana agent...');
+		}
+		function startloadgen(e) {
+			e.preventDefault();
+			$('#ldTable').bootstrapTable('destroy');
+			fetchUrl('/startloadgen', 'Starting load generator...');
+		}
+		function stoploadgen(e) {
+			e.preventDefault();
+			$('#ldTable').bootstrapTable('destroy');
+			fetchUrl('/stoploadgen', 'Stopping load generator...');
+		}
+		
+		function fetchUrl(url, message, param) {
+			$('body').loadingModal({text: message}).loadingModal('animation', 'wave');
+			if( param ) {
+				url = url + '?data='+param;
+			}
+			fetch(url).then(processRes, function(e) {
+				console.log("Fetch failed!", e);
+			});
+		}
+		function fetchUrlPost(url, message,  param) {
+			console.log(JSON.stringify(param))
+			$('body').loadingModal({text: message}).loadingModal('animation', 'wave');
+			fetch(url,{
+				method: 'post',
+				headers: { 
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(param)
+			}).then(processRes, function(e) {
+				console.log("Fetch failed!", e);
+			});
+		}
+		function processRes(res) {
+			$('body').loadingModal('hide');
+			$('body').loadingModal('destroy');
+		// res instanceof Response == true.
+			if (res.ok) {
+				res.json().then(function(json) {
+//					document.getElementById('modalText').innerHTML = JSON.stringify(json);
+//					$("#exampleModal").modal();
+//					if( json.message ) {
+//						for( var m in json.message ) {
+//							document.getElementsByClassName('toast-body').innerHTML = m;
+//						}
+//					}
+					//document.getElementById('result').innerHTML = json;
+					if( json.docker) {
+						jsondocker = json.docker
+						console.log(json.docker.length);
+						$('#dTable').bootstrapTable({ data: json.docker });
+					}
+					if( json.ps ) {
+						console.log("json.ps exists " + json.ps.length);
+						$('#psTable').bootstrapTable({
+							data: json.ps
+						});
+					}
+					if ( json.agentinstalled ) {
+						if( json.agentinstalled== 'True' ) {
+							document.getElementById("agentBtn").innerHTML = "Installed";
+							$('#agentkey').attr('disabled', 'disabled');
+							$('#agentBtn').addClass('disabled btn-success');
+							$('#agentBtn').removeClass('btn-primary');
+							$('#agentBtn').prop("onclick", null).off("click");
+							$('#agentDelBtn').removeClass('d-none');
+						} else {
+							document.getElementById("agentBtn").innerHTML = "Install";
+							$('#agentBtn').addClass('btn-primary');
+							$('#agentkey').removeAttr('disabled');
+							$('#agentBtn').removeClass('disabled btn-success');
+							$('#agentBtn').prop("onclick", installAgent(event)).on("click");
+							$('#agentDelBtn').addClass('d-none');
+						}
+					}
+					if( json.agent ) {
+						if( json.agent.length > 0 ) {
+							if( json.agent[0].status.startsWith('Running')) {
+								$('#btnAgStop').removeClass('d-none');
+								$('#btnAgStart').addClass('d-none');
+							} else {
+								$('#btnAgStart').removeClass('d-none');
+								$('#btnAgStop').addClass('d-none');
+							}
+						}
+						$('#agTable').bootstrapTable({
+							data: json.agent
+						});
+					}
+					if( json.loadgen ) {
+						if( json.loadgen.length > 0 ) {
+							if( json.loadgen[0].status.startsWith('Running')) {
+								$('#btnldStop').removeClass('d-none');
+								$('#btnldStart').addClass('d-none');
+							} else {
+								$('#btnldStart').removeClass('d-none');
+								$('#btnldStop').addClass('d-none');
+							}
+						}
+						$('#ldTable').bootstrapTable({
+							data: json.loadgen
+						});
+					}
+				});
+			} else {
+				console.log("Looks like the response wasn't perfect, got status", res.status);
+			}
+		}
+		function statusFormatter(index, row) {
+			console.log(row.status)
+			if( row.status == 'True' || row.status == 'Up' || row.status.startsWith('Running')) {
+				return '<span style="color: #33c332;"><i class="far fa-grin fa-2x" data-toggle="tooltip" title="' + row.status + '"></i></span>';
+			} if (row.status == 'N/A') {
+				return row.status;
+			}else {
+				return '<span style="color: #ff6b52;"><i class="far fa-frown fa-2x" data-toggle="tooltip" title="' + row.status + '"></i></span>';
+			}
+		}
+</script>
+	{% endblock %}
