@@ -1,12 +1,18 @@
 # democonsole
 
-## Requrements
+# Requrements
+## installation
 python3
 <br>nginx
 <br>uwsgi
 <br>docker
 <br>docker-compose
 
+## Download robot-shop
+git clone https://github.com/instana/robot-shop.git
+
+
+# Steps
 ## update
 sudo apt-get update
 
