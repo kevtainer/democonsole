@@ -1,23 +1,23 @@
 # democonsole
 
-# Prerequisites
-## softwate installation
+## Prerequisites
+### softwate installation
 <li> nginx
 <li> docker
 <li> docker-compose
 
-# Steps
+## Steps
 
-## Download robot-shop
+### Download robot-shop
 git clone https://github.com/instana/robot-shop.git
 
-## Download this repository
+### Download this repository
 git clone https://github.com/ShaunPark/democonsole.git
 
-## update
+### update
 sudo apt-get update
 
-## install pip3, uwsgi
+### install pip3, uwsgi
 sudo apt-get install python3-dev python3-pip python3-setuptools
 <br>sudo -H pip3 install --upgrade pip
 <br>sudo -H pip3 install wheel
@@ -25,16 +25,16 @@ sudo apt-get install python3-dev python3-pip python3-setuptools
 <br>sudo -H pip3 install Flask
 <br>sudo apt-get install uwsgi-plugin-python
 
-## install python3-venv
+### install python3-venv
 sudo apt-get install python3-venv
 
-## create venv
+### create venv
 python3 -m venv demoenv
 
-## use venv
+### use venv
 source ./demoenv/bin/activate
 
-## install packages
+### install packages
 
 
 
