@@ -349,11 +349,11 @@
 		function statusFormatter(index, row) {
 			console.log(row.status)
 			if( row.status == 'True' || row.status == 'Up' || row.status.startsWith('Running')) {
-				return '<span style="color: #33c332;"><i class="far fa-grin fa-2x" data-toggle="tooltip" title="' + row.status + '"></i></span>';
+				return '<span style="color: #33c332;"><i class="fas fa-check fa-2x" data-toggle="tooltip" title="' + row.status + '"></i></span>';
 			} if (row.status == 'N/A') {
 				return row.status;
 			}else {
-				return '<span style="color: #ff6b52;"><i class="far fa-frown fa-2x" data-toggle="tooltip" title="' + row.status + '"></i></span>';
+				return '<span style="color: #ff6b52;"><i class="fas fa-times fa-2x" data-toggle="tooltip" title="' + row.status + '"></i></span>';
 			}
 		}
 </script>
