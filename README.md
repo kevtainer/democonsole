@@ -20,6 +20,7 @@ sudo apt-get install python3-dev python3-pip python3-setuptools
 <br>sudo -H pip3 install --upgrade pip
 <br>sudo -H pip3 install wheel
 <br>sudo -H pip3 install uwsgi
+<br>sudo -H pip3 install Flask
 
 ## install python3-venv
 sudo apt-get install python3-venv
@@ -31,7 +32,6 @@ python3 -m venv demoenv
 source ./demoenv/bin/activate
 
 ## install packages
-pip3 install Flask
 
 
 
