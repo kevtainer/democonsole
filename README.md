@@ -1,4 +1,4 @@
-# democonsole
+# Demo Console
 <img width="1125" alt="democonsole" src="https://user-images.githubusercontent.com/16640750/72549779-af178d80-38d4-11ea-9f68-e313d2d673dc.png">
 
 ## Prerequisites
