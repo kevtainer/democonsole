@@ -1,6 +1,6 @@
 # democonsole
 
-1. Requrements
+## Requrements
 <br>python3
 <br>nginx
 <br>uwsgi
