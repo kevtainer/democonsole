@@ -36,5 +36,15 @@ source ./demoenv/bin/activate
 ### install packages
 pip3 install Flask
 
+### copy nginx config files
+sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.origin
+sudo cp ~/democonsole/nginx.conf /etc/nginx.conf
+sudo cp ~/democonsole/default.conf /etc/nginx/conf.d/demo.conf
+
+### copy uwsgi service config file
+sudo cp ~/democonsole/demoapp.service /etc/systemd/system/demoapp.service
+
+### make log directory
+sudo mkdir /var/log/uwsgi
 
 
