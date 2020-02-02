@@ -9,8 +9,8 @@ Authors:
 * Kevin Crawley - <kevin.crawley@instana.com>
 
 ## Prerequisites
-<li> docker
-<li> kubeconfig bundle (for kubernetes demo functionality)
+* docker
+* kubeconfig bundle (for kubernetes demo functionality)
 
 This application is entirely self-contained, and should work on all platforms.
 
