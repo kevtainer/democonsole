@@ -1,64 +1,62 @@
-# Demo Console
-<img width="1125" alt="democonsole" src="https://user-images.githubusercontent.com/16640750/72549779-af178d80-38d4-11ea-9f68-e313d2d673dc.png">
+# Instana Demo Console
+<img width="1125" alt="democonsole" src="./doc/img/dc-console.png">
+
+This self-contained application will automate the process of deploying and configuring the Instana Agent, Robot Shop, and Load Generator on your local machine and against an existing Kubernetes cluster (admin credentials must be supplied via kubeconfig yaml bundle). The agent installer uses the Instana static agent to expedite the auto-instrumentation process.
+
+Authors:
+
+* Sangho Park - <sangho@instana.com>
+* Kevin Crawley - <kevin.crawley@instana.com>
 
 ## Prerequisites
-### softwate installation
-<li> nginx
 <li> docker
-<li> docker-compose
+<li> kubeconfig bundle (for kubernetes demo functionality)
 
-## Steps
+This application is entirely self-contained, and should work on all platforms.
 
-### Download robot-shop
-git clone https://github.com/instana/robot-shop.git
+### Ensure your machine has Docker installed
+* OSX - https://docs.docker.com/docker-for-mac/install/
+* Windows - https://docs.docker.com/docker-for-windows/install/
+* Linux (ubuntu) - https://docs.docker.com/install/linux/docker-ce/ubuntu/
 
-### Download this repository
-git clone https://github.com/ShaunPark/democonsole.git
+### Start the application
 
-### update
-sudo apt-get update
+`$ make service`
 
-### install pip3, uwsgi
-sudo apt-get install python3-dev python3-pip python3-setuptools
-<br>sudo -H pip3 install --upgrade pip
-<br>sudo -H pip3 install wheel
-<br>sudo -H pip3 install uwsgi
-<br>sudo apt-get install uwsgi-plugin-python
+If you are not using a posix shell (you should be), you can start the application without `make`:
 
-### install python3-venv
-sudo apt-get install python3-venv
+```
+docker run \
+  -d --rm \
+  --name demo-bootstrapper \
+  --volume config:/config \
+  --volume /var/run/docker.sock:/var/run/docker.sock \
+  --privileged \
+  -p 8081:80 \
+  kcmastrpc/democonsole:latest
+```
 
-### create venv
-python3 -m venv demoenv
+Access the service locally in your browser at [http://localhost:8081](http://localhost:8081)
 
-### use venv
-source ./demoenv/bin/activate
+### View logs
 
-### install packages
-pip3 install Flask
+`$ make log`
 
+### Other commands (building/development tools)
 
-### modify directories in config file
-<ul>
-<li> democonsole/demoapp.service - WorkingDirectory, ExecStart </li>
-  <li> democonsole/app/app.ini - home, virtualenv, env</li>
-</ul>
+`$ make help`
 
-### copy nginx config files
-sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.origin
-<br>sudo cp ~/democonsole/nginx.conf /etc/nginx/nginx.conf
-<br>sudo cp ~/democonsole/default.conf /etc/nginx/conf.d/demo.conf
+## Docker Guide (local)
 
-### copy uwsgi service config file
-sudo cp ~/democonsole/demoapp.service /etc/systemd/system/demoapp.service
+No installation or configuration should be necessary, the container comes with all necessary dependencies installed.
 
-### make log directory
-sudo mkdir /var/log/uwsgi
+## Kubernetes Guide (cloud)
 
-### start nginx and democonsole
-sudo systemctl start nginx
-sudo systemctl start demoapp
+A properly configured kubernetes cluster is required to utilize this portion of the demo.
 
+> Note: Additional guides should be created for other K8S platforms (OpenShift, AKS, EKS, etc)
 
-
-
+### Setup
+* Follow [this guide](https://gitlab.com/opentracing-workshop/lab-notes) for instructions on how to setup a cluster and export a valid kubeconfig file.
+* Complete [Lab 01](https://gitlab.com/opentracing-workshop/lab-notes/tree/master/lab-01#welcome-to-lab-01-google-cloud-sign-up) and up to the end of [Lab 02 - Section 1.4](https://gitlab.com/opentracing-workshop/lab-notes/tree/master/lab-02#welcome-to-lab-02-kubernetes-setup) to generate a kubeconfig file on Google Cloud (GKE)
+* Use the `kubeconfig` file generated above to configure the kubernetes demo console

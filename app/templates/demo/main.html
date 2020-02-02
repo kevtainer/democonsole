@@ -10,158 +10,306 @@
 		<div class="pb-2 my-2">
 			<img src="{{ url_for('static', filename='INSTANA.png')}}"> Demo console
 		</div>
-		<div class="card mb-3">
-			<div class="card-header">
-				<div class="row">
-					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
-						<rect width="100%" height="100%" fill="#88a8eb"/>
-					</svg>
-					<p class="media-body mb-0 small lh-125">
-						<strong class="d-block text-gray-dark">Check Demo Environment</strong>
-						Check whether Docker and Docker-compose are intallled. And run docker daemon.
-						<br>
-						<br>Command : sudo systemctl start docker
-					</p>
-					<div>
-						<button id="btnDocker" type="button" class="btn btn-success btn-sm" onclick="startDocker(event)">Start</button>
+	</div>
+	<ul class="nav nav-tabs" id="myTab" role="tablist">
+	  <li class="nav-item">
+	    <a class="nav-link active" id="dc-tab" data-toggle="tab" href="#dc" role="tab" aria-controls="dc" aria-selected="true" onclick="docker_info(event)">docker-compose (local)</a>
+	  </li>
+	  <li class="nav-item">
+		<a class="nav-link" id="k8-tab" data-toggle="tab" href="#k8" role="tab" aria-controls="k8" aria-selected="false" onclick="k8s_info(event)">kubernetes (cloud)</a>
+	  </li>
+	</ul>
+	<div class="tab-content" id="myTabContent">
+		<div class="tab-pane fade show active" id="dc" role="tabpanel" aria-labelledby="dc-tab">
+			<div class="my-3 p-3">
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="row">
+							<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+								<rect width="100%" height="100%" fill="#88a8eb"/>
+							</svg>
+							<p class="media-body mb-0 small lh-125">
+								<strong class="d-block text-gray-dark">Demo Environment Status</strong>
+								Determines if current environment is capable of starting the demo<br />
+								Important: This demo requires at least 4 GiB ram and 4 CPUs
+							</p>
+						</div>
+					</div>
+					<div class="card-body" id="result">
+						<table id="docker_table" class="table table-sm">
+							<thead>
+								<th data-field="comp" class="small">Component</th>
+								<th data-field="info" class="small">Info</th>
+								<th data-field="status" class="small" data-formatter="statusFormatter">Status</th>
+							</thead>
+							<tbody class="small">
+							</tbody>
+						</table>
 					</div>
 				</div>
-			</div>
-			<div class="card-body" id="result">
-				<table id="dTable" class="table table-sm">
-					<thead>
-						<th data-field="comp" class="small">Component</th>
-						<th data-field="ver" class="small">Version</th>
-						<th data-field="status" class="small" data-formatter="statusFormatter">Status</th>
-					</thead>
-					<tbody class="small">
-					</tbody>
-				</table>
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="row">
+							<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+								<rect width="100%" height="100%" fill="#88a8eb"/>
+							</svg>
+							<p class="media-body mb-0 small lh-125">
+								<strong class="d-block text-gray-dark">Manage Demo Applications</strong>
+								Start/Stop Robotshop Demo Applications<br />
+								Note: This may take a while on initial run (images are pulled)
+							</p>
+							<div>
+								<button id="dc_start_rs_btn" type="button" class="btn btn-success btn-sm" onclick="dc_start_rs(event)">Start</button>&nbsp;
+								<button id="dc_stop_rs_btn" type="button" class="btn btn-danger btn-sm" onclick="dc_stop_rs(event)">Stop</button>
+							</div>
+						</div>
+					</div>
+					<div class="card-body">
+						<table id="dc_rs_table" class="table table-sm">
+							<thead>
+								<th data-field="comp" class="small">Component</th>
+								<th data-field="status" class="small" data-formatter="statusFormatter">Running</th>
+							</thead>
+							<tbody class="small">
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="row">
+							<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+								<rect width="100%" height="100%" fill="#88a8eb"/>
+							</svg>
+							<p class="media-body mb-0 small lh-125">
+								<strong class="d-block text-gray-dark">Setup Instana Agent</strong>
+								Configure Instana agent with an agent key / Remove Instana agent container
+							</p>
+							<div>
+								<button id="dc_install_agent_btn" type="button" class="btn btn-primary btn-sm align-middle" onclick="dc_install_agent(event)">Install</button>
+								<button id="dc_remove_agent_btn" type="button" class="btn btn-secondary btn-sm align-middle" onclick="dc_remove_agent(event)">Remove Agent</button>
+							</div>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1">Agent Key</span>
+							</div>
+							<input id="dc_agent_key" type="password" class="pl-2 align-middle" placeholder="Agent Key">
+							<span>&nbsp;</span>
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1">Agent Endpoint</span>
+							</div>
+							<input id="dc_agent_endpoint" type="text" class="form-control" aria-label="Text input with checkbox" placeholder="Default: ingress-red-saas.instana.io">
+							<span>&nbsp;</span>
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1">Zone Name</span>
+							</div>
+							<input id="dc_agent_name" type="text" class="form-control" aria-label="Text input with checkbox" placeholder="Default: democonsole-dc">
+						</div>
+					</div>
+				</div>
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="row">
+							<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+								<rect width="100%" height="100%" fill="#88a8eb"/>
+							</svg>
+							<p class="media-body mb-0 small lh-125">
+								<strong class="d-block text-gray-dark">Manage Instana Agent</strong>
+								Start the agent / Stop the agent<br />
+								Note: Instana agent must be configured using the `Setup Instana Agent` form
+							</p>
+							<div>
+								<button id="dc_start_agent_btn" type="button" class="btn btn-success btn-sm" onclick="dc_start_agent(event)">Start</button>
+								<button id="dc_stop_agent_btn"  type="button" class="btn btn-danger btn-sm" onclick="dc_stop_agent(event)">Stop</button>
+							</div>
+						</div>
+					</div>
+					<div class="card-body">
+						<table id="dc_instana_table" class="table table-sm">
+							<thead>
+								<th data-field="comp" class="small">Component</th>
+								<th data-field="installed" class="small" data-formatter="installedFormatter">Installed</th>
+								<th data-field="status" class="small"  data-formatter="statusFormatter">Running</th>
+							</thead>
+							<tbody class="small">
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="row">
+							<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+								<rect width="100%" height="100%" fill="#88a8eb"/>
+							</svg>
+							<p class="media-body mb-0 small lh-125">
+								<strong class="d-block text-gray-dark">Manage Load Generator</strong>
+								Start the load generator / Stop the load generator
+							</p>
+							<div>
+								<button id="dc_start_load_btn" type="button" class="btn btn-primary btn-sm" onclick="dc_start_load(event)">Generate</button>
+								<button id="dc_stop_load_btn"  type="button" class="btn btn-danger btn-sm" onclick="dc_stop_load(event)">Stop</button>
+		
+							</div>
+						</div>
+					</div>
+					<div class="card-body">
+						<table id="dc_load_table" class="table table-sm">
+							<thead>
+								<th data-field="comp" class="small">Component</th>
+								<th data-field="status" class="small"  data-formatter="statusFormatter">Running</th>
+							</thead>
+							<tbody class="small">
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
-		<div class="card mb-3">
-			<div class="card-header">
-				<div class="row">
-					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
-						<rect width="100%" height="100%" fill="#88a8eb"/>
-					</svg>
-					<p class="media-body mb-0 small lh-125">
-						<strong class="d-block text-gray-dark">Manage Demo Applications</strong>
-						Start/Stop Robotshop Demo Applications
-						<br>
-						<br>Command : sudo docker-compose up -d 						
-						<br><span style="opacity: 0;">Command :</span> sudo docker-compose down
-					</p>
-					<div>
-						<button type="button" class="btn btn-success btn-sm" onclick="docStart(event)">Start</button>&nbsp;
-						<button type="button" class="btn btn-danger btn-sm" onclick="docStop(event)">Stop</button>
+		<div class="tab-pane fade" id="k8" role="tabpanel" aria-labelledby="k8-tab">
+			<div class="my-3 p-3">
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="row">
+							<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+								<rect width="100%" height="100%" fill="#88a8eb"/>
+							</svg>
+							<p class="media-body mb-0 small lh-125">
+								<strong class="d-block text-gray-dark">Kubernetes Component Overview</strong>
+								Checks environment sanity for connecting and managing the demo on a remote K8S cluster<br />
+							</p>
+						</div>
+					</div>
+					<div class="card-body" id="result">
+						<table id="k8s_table" class="table table-sm">
+							<thead>
+								<th data-field="comp" class="small">Component</th>
+								<th data-field="info" class="small">Info</th>
+								<th data-field="status" class="small" data-formatter="statusFormatter">Status</th>
+							</thead>
+							<tbody class="small">
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="row">
+							<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+								<rect width="100%" height="100%" fill="#88a8eb"/>
+							</svg>
+							<p class="media-body mb-0 small lh-125">
+								<strong class="d-block text-gray-dark">Install valid K8S cert bundle</strong>
+								This is required to install RobotShop and Instana on your K8S cluster. Properly scoped credentials required (admin).
+							</p>
+							<div>
+								<button id="k8s_add_config_btn" type="button" class="btn btn-success btn-sm" onclick="k8s_add_config(event)">Validate</button>
+								<button id="k8s_del_config_btn" type="button" class="btn btn-danger btn-sm" onclick="k8s_del_config(event)">Delete</button>
+							</div>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="form-group mb-3">
+							<label for="kubeconfig">Valid K8S bundle</label>
+							<textarea class="form-control" id="kubeconfig" rows="3" placeholder="Paste YAML here"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="row">
+							<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+								<rect width="100%" height="100%" fill="#88a8eb"/>
+							</svg>
+							<p class="media-body mb-0 small lh-100">
+								<strong class="d-block text-gray-dark">Manage Demo Application</strong>
+								Start/Stop Robotshop Demo Applications on Kubernetes<br />
+							</p>
+							<div>
+								<button id="k8s_start_rs_btn" type="button" class="btn btn-success btn-sm" onclick="k8s_start_rs(event)">Start</button>&nbsp;
+								<button id="k8s_stop_rs_btn" type="button" class="btn btn-danger btn-sm" onclick="k8s_stop_rs(event)">Stop</button>&nbsp;
+							</div>
+						</div>
+					</div>
+					<div class="card-body">
+						<table id="k8s_rs_table" class="table table-sm">
+							<thead>
+								<th data-field="comp" class="small">Component</th>
+								<th data-field="status" class="small" data-formatter="statusFormatter">Status</th>
+							</thead>
+							<tbody class="small">
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="row">
+							<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+								<rect width="100%" height="100%" fill="#88a8eb"/>
+							</svg>
+							<p class="media-body mb-0 small lh-125">
+								<strong class="d-block text-gray-dark">Manage Instana Agent</strong>
+								Manage the Instana Agent on K8S via the Helm Package Manager
+								Note: `Agent Key` is required
+							</p>
+							<div>
+								<button id="k8s_install_agent_btn" type="button" class="btn btn-primary btn-sm align-middle" onclick="k8s_install_agent(event)">Install Agent</button>
+								<button id="k8s_remove_agent_btn" type="button" class="btn btn-secondary btn-sm align-middle" onclick="k8s_remove_agent(event)">Remove Agent</button>
+							</div>
+						</div>
+					</div>
+					<div class="card-body">
+						<div class="input-group mb-3">
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1">Agent Key</span>
+							</div>
+							<input id="k8s_agent_key" type="password" class="pl-2 align-middle" placeholder="Agent Key">
+							<span>&nbsp;</span>
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1">Agent Endpoint</span>
+							</div>
+							<input id="k8s_agent_endpoint" type="text" class="form-control" aria-label="Text input with checkbox" placeholder="Default: ingress-red-saas.instana.io">
+							<span>&nbsp;</span>
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="basic-addon1">Cluster Name</span>
+							</div>
+							<input id="k8s_agent_name" type="text" class="form-control" aria-label="Text input with checkbox" placeholder="Default: democonsole-k8s">
+						</div>
+					</div>
+				</div>
+				<div class="card mb-3">
+					<div class="card-header">
+						<div class="row">
+							<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+								<rect width="100%" height="100%" fill="#88a8eb"/>
+							</svg>
+							<p class="media-body mb-0 small lh-125">
+								<strong class="d-block text-gray-dark">Manage Load Generator</strong>
+								Start the load generator / Stop the load generator
+							</p>
+							<div>
+								<button id="k8s_start_load_btn" type="button" class="btn btn-primary btn-sm" onclick="k8s_start_load(event)">Generate</button>
+								<button id="k8s_stop_load_btn"  type="button" class="btn btn-danger btn-sm" onclick="k8s_stop_load(event)">Stop</button>
+							</div>
+						</div>
+					</div>
+					
+					<div class="card-body">
+						<table id="k8s_load_table" class="table table-sm">
+							<thead>
+								<th data-field="comp" class="small">Component</th>
+								<th data-field="status" class="small"  data-formatter="statusFormatter">Status</th>
+							</thead>
+							<tbody class="small">
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
-			<div class="card-body">
-				<table id="psTable" class="table table-sm">
-					<thead>
-						<th data-field="ps" class="small">Component</th>
-						<th data-field="status" class="small"  data-formatter="statusFormatter">Status</th>
-					</thead>
-					<tbody class="small">
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<div class="card mb-3">
-			<div class="card-header">
-				<div class="row">
-					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
-						<rect width="100%" height="100%" fill="#88a8eb"/>
-					</svg>
-					<p class="media-body mb-0 small lh-125">
-						<strong class="d-block text-gray-dark">Install Instana Agent</strong>
-						Install Instana agent with an agent key / Remove Instana agent from the host.
-					</p>
-					<div >
-						<input id="agentkey" type="password" class="pl-2 align-middle" placeholder="Agent Key">
-						<button id="agentBtn" type="button" class="btn btn-primary btn-sm align-middle" onclick="installAgent(event)">Install</button>
-						<button id="agentDelBtn" type="button" class="btn btn-secondary btn-sm align-middle" onclick="removeAgent(event)">Remove Agent</button>
-					</div>
-				</div>
-				<div class="row">
-					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
-						<rect width="100%" height="100%" fill="#f8f8f8"/>
-					</svg>
-					<p class="media-body mb-0 small lh-125">
-						<br>Command : curl -o setup_agent.sh https://setup.instana.io/agent && chmod 700 ./setup_agent.sh && sudo ./setup_agent.sh -a &lt;AGENT_KEY&gt;  -t dynamic -l us
-						<br><span style="opacity: 0;">Command :</span> sudo yum -y remove instana-agent-dynamic.x86_64
-					</p>
-				</div>
-			</div>
-			<div class="card-body">
-				<div class="input-group mb-3">
-					<input id="endpoint" type="text" class="form-control" aria-label="Text input with checkbox" placeholder="Enter end point for On-premise backend">
-				</div>
-			</div>
-		</div>
-		<div class="card mb-3">
-			<div class="card-header">
-				<div class="row">
-					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
-						<rect width="100%" height="100%" fill="#88a8eb"/>
-					</svg>
-					<p class="media-body mb-0 small lh-125">
-						<strong class="d-block text-gray-dark">Manage Instana Agent</strong>
-						Start Instana agent to monitor automatically / Stop the agent
-						<br>
-						<br>Command : sudo /opt/instana/agent/bin/start
-						<br><span style="opacity: 0;">Command :</span> sudo /opt/instana/agent/bin/stop
-					</p>
-					<div>
-						<button id="btnAgStart" type="button" class="btn btn-success btn-sm" onclick="startAgent(event)">Start</button>
-						<button id="btnAgStop"  type="button" class="btn btn-danger btn-sm" onclick="stopAgent(event)">Stop</button>
-					</div>
-				</div>
-			</div>
-			<div class="card-body">
-				<table id="agTable" class="table table-sm">
-					<thead>
-						<th data-field="ps" class="small">Component</th>
-						<th data-field="status" class="small"  data-formatter="statusFormatter">Status</th>
-					</thead>
-					<tbody class="small">
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<div class="card mb-3">
-			<div class="card-header">
-				<div class="row">
-					<svg class="rounded mx-3" width="34" height="34" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
-						<rect width="100%" height="100%" fill="#88a8eb"/>
-					</svg>
-					<p class="media-body mb-0 small lh-125">
-						<strong class="d-block text-gray-dark">Manage Load Generator</strong>
-						Start the load generator / Stop the load generator
-						<br>
-						<br>Command : sudo docker run -it -d --name loadgen --rm --network=host -e HOST=http://localhost:8080 robotshop/rs-load
-						<br><span style="opacity: 0;">Command :</span> sudo docker stop loadgen
-					</p>
-					<div>
-						<button id="btnldStart" type="button" class="btn btn-primary btn-sm" onclick="startloadgen(event)">Generate</button>
-						<button id="btnldStop"  type="button" class="btn btn-secondary btn-sm" onclick="stoploadgen(event)">Stop</button>
-
-					</div>
-				</div>
-			</div>
-			<div class="card-body">
-				<table id="ldTable" class="table table-sm">
-					<thead>
-						<th data-field="ps" class="small">Component</th>
-						<th data-field="status" class="small"  data-formatter="statusFormatter">Status</th>
-					</thead>
-					<tbody class="small">
-					</tbody>
-				</table>
-			</div>
-
 		</div>
 	</div>
 </main>
@@ -187,65 +335,132 @@
 
 	<script>
 		function init() {
-			getStatus(null);
+			docker_info(null);
 		}
-		function getStatus(e) {
+
+		function docker_info(e) {
 			if ( e ) {
 				e.preventDefault();
 			}
-			fetchUrl('/docker', 'Loading...');
+			fetchUrl('/docker_info', 'Loading...');
 		}
-		function startDocker(e) {
-			$('#dTable').bootstrapTable('destroy');
-			fetchUrl('/dockerstart', 'Starting Docker...');
+
+		function k8s_info(e) {
+			if ( e ) {
+				e.preventDefault();
+			}
+			fetchUrl('/k8s_info', 'Loading...');
 		}
-		function docStart(e) {
+
+		function dc_start_rs(e) {
 			e.preventDefault();
-			$('#psTable').bootstrapTable('destroy');
-			fetchUrl('/appstart', 'Starting applications...');
+			$('#dc_rs_table').bootstrapTable('destroy');
+			fetchUrl('/dc_start_rs', 'Starting applications...');
 		}
-		function docStop(e) {
+
+		function dc_stop_rs(e) {
 			e.preventDefault();
-			$('#psTable').bootstrapTable('destroy');
-			fetchUrl('/appstop', 'Stopping applications...');
+			$('#dc_rs_table').bootstrapTable('destroy');
+			fetchUrl('/dc_stop_rs', 'Stopping applications...');
 		}
-		function installAgent(e) {
+
+		function k8s_start_rs(e) {
+			e.preventDefault();
+			$('#k8s_rs_table').bootstrapTable('destroy');
+			fetchUrl('/k8s_start_rs', 'Starting applications...');
+		}
+
+		function k8s_stop_rs(e) {
+			e.preventDefault();
+			$('#k8s_rs_table').bootstrapTable('destroy');
+			fetchUrl('/k8s_stop_rs', 'Stopping applications...');
+		}
+
+		function k8s_start_load(e) {
+			e.preventDefault();
+			fetchUrl('/k8s_start_load', 'Starting load generator...');
+		}
+
+		function k8s_stop_load(e) {
+			e.preventDefault();
+			fetchUrl('/k8s_stop_load', 'Stopping load generator...');
+		}
+
+		function k8s_install_agent(e) {
 			if(e) {
 				e.preventDefault();
 			}
 			var param = new Object();
-			param.key = $('#agentkey').val();
-			param.endpoint = $('#endpoint').val();
+			param.key = $('#k8s_agent_key').val();
+			param.endpoint = $('#k8s_agent_endpoint').val();
+			param.name = $('#k8s_agent_name').val();
 			if (param.key.length < 22) {
-				$('#agentkey').focus();
+				$('#k8s_agent_key').focus();
 			} else {
-				fetchUrlPost('/installagent', 'Installing Instana agent...',  param);
+				fetchUrlPost('/k8s_install_agent', 'Installing Instana agent...',  param);
 			}
 		}
-		function removeAgent(e) {
+
+		function k8s_remove_agent(e) {
 			e.preventDefault();
-			fetchUrl('/removeagent', 'Uninstalling Instana agent...');
+			fetchUrl('/k8s_remove_agent', 'Removing Instana agent...');
 		}
 
-		function startAgent(e) {
-			e.preventDefault();
-			$('#agTable').bootstrapTable('destroy');
-			fetchUrl('/startagent', 'Starting Instana agent...');
+		function k8s_add_config(e) {
+			if(e) {
+				e.preventDefault();
+			}
+			var param = new Object();
+			param.kubeconfig = $('#kubeconfig').val();
+
+			fetchUrlPost('/k8s_add_config', 'Validating kubeconfig yaml...', param);
 		}
-		function stopAgent(e) {
-			e.preventDefault();
-			$('#agTable').bootstrapTable('destroy');
-			fetchUrl('/stopagent', 'Stopping Instana agent...');
+
+		function k8s_del_config(e) {
+			if(e) {
+				e.preventDefault();
+			}
+			fetchUrl('/k8s_del_config', 'Removing kubeconfig...')
 		}
-		function startloadgen(e) {
-			e.preventDefault();
-			$('#ldTable').bootstrapTable('destroy');
-			fetchUrl('/startloadgen', 'Starting load generator...');
+
+		function dc_install_agent(e) {
+			if(e) {
+				e.preventDefault();
+			}
+			var param = new Object();
+			param.key = $('#dc_agent_key').val();
+			param.endpoint = $('#dc_agent_endpoint').val();
+			param.name = $('#dc_agent_name').val();
+			if (param.key.length < 22) {
+				$('#dc_agent_key').focus();
+			} else {
+				fetchUrlPost('/dc_install_agent', 'Installing Instana agent...',  param);
+			}
 		}
-		function stoploadgen(e) {
+
+		function dc_remove_agent(e) {
 			e.preventDefault();
-			$('#ldTable').bootstrapTable('destroy');
-			fetchUrl('/stoploadgen', 'Stopping load generator...');
+			fetchUrl('/dc_remove_agent', 'Uninstalling Instana agent...');
+		}
+
+		function dc_start_agent(e) {
+			e.preventDefault();
+			fetchUrl('/dc_start_agent', 'Starting Instana agent...');
+		}
+
+		function dc_stop_agent(e) {
+			e.preventDefault();
+			fetchUrl('/dc_stop_agent', 'Stopping Instana agent...');
+		}
+
+		function dc_start_load(e) {
+			e.preventDefault();
+			fetchUrl('/dc_start_load', 'Starting load generator...');
+		}
+
+		function dc_stop_load(e) {
+			e.preventDefault();
+			fetchUrl('/dc_stop_load', 'Stopping load generator...');
 		}
 		
 		function fetchUrl(url, message, param) {
@@ -257,6 +472,7 @@
 				console.log("Fetch failed!", e);
 			});
 		}
+
 		function fetchUrlPost(url, message,  param) {
 			console.log(JSON.stringify(param))
 			$('body').loadingModal({text: message}).loadingModal('animation', 'wave');
@@ -274,85 +490,214 @@
 		function processRes(res) {
 			$('body').loadingModal('hide');
 			$('body').loadingModal('destroy');
-		// res instanceof Response == true.
+
 			if (res.ok) {
 				res.json().then(function(json) {
-//					document.getElementById('modalText').innerHTML = JSON.stringify(json);
-//					$("#exampleModal").modal();
-//					if( json.message ) {
-//						for( var m in json.message ) {
-//							document.getElementsByClassName('toast-body').innerHTML = m;
-//						}
-//					}
-					//document.getElementById('result').innerHTML = json;
-					if( json.docker) {
-						jsondocker = json.docker
-						console.log(json.docker.length);
-						$('#dTable').bootstrapTable({ data: json.docker });
+					if( json.docker ) {
+						$('#docker_table').bootstrapTable({ data: json.docker });
 					}
-					if( json.ps ) {
-						console.log("json.ps exists " + json.ps.length);
-						$('#psTable').bootstrapTable({
-							data: json.ps
-						});
-					}
-					if ( json.agentinstalled ) {
-						if( json.agentinstalled== 'True' ) {
-							document.getElementById("agentBtn").innerHTML = "Installed";
-							$('#agentkey').attr('disabled', 'disabled');
-							$('#agentBtn').addClass('disabled btn-success');
-							$('#agentBtn').removeClass('btn-primary');
-							$('#agentBtn').prop("onclick", null).off("click");
-							$('#agentDelBtn').removeClass('d-none');
+					if( json.dc_rs ) {
+						$('#dc_rs_table').bootstrapTable({ data: json.dc_rs });
+						if( json.dc_rs.length > 0 ) {
+							$('#dc_start_load_btn').removeClass('disabled btn-secondary')
+							$('#dc_start_load_btn').addClass('btn-primary')
+
+							document.getElementById("dc_start_rs_btn").innerHTML = "Running";
+							document.getElementById("dc_stop_rs_btn").innerHTML = "Stop";
+							$('#dc_start_rs_btn').addClass('disabled btn-secondary')
+							$('#dc_start_rs_btn').removeClass('btn-success')
+
+							$('#dc_stop_rs_btn').addClass('btn-danger')
+							$('#dc_stop_rs_btn').removeClass('disabled btn-secondary')
 						} else {
-							document.getElementById("agentBtn").innerHTML = "Install";
-							$('#agentBtn').addClass('btn-primary');
-							$('#agentkey').removeAttr('disabled');
-							$('#agentBtn').removeClass('disabled btn-success');
-							$('#agentBtn').prop("onclick", installAgent(event)).on("click");
-							$('#agentDelBtn').addClass('d-none');
+							$('#dc_start_load_btn').removeClass('btn-primary')
+							$('#dc_start_load_btn').addClass('disabled btn-secondary')
+
+							document.getElementById("dc_start_rs_btn").innerHTML = "Start";
+							document.getElementById("dc_stop_rs_btn").innerHTML = "Stopped";
+							$('#dc_start_rs_btn').removeClass('disabled btn-secondary')
+							$('#dc_start_rs_btn').addClass('btn-success')
+
+							$('#dc_stop_rs_btn').addClass('disabled btn-secondary')
+							$('#dc_stop_rs_btn').removeClass('btn-danger')
 						}
 					}
-					if( json.agent ) {
-						if( json.agent.length > 0 ) {
-							if( json.agent[0].status.startsWith('Running')) {
-								$('#btnAgStop').removeClass('d-none');
-								$('#btnAgStart').addClass('d-none');
+					if( json.dc_instana ) {
+						if( json.dc_instana.length > 0 ) {
+							if( json.dc_instana[0].installed ) {
+								document.getElementById("dc_install_agent_btn").innerHTML = "Installed";
+								$('#dc_agent_key').attr('disabled', 'disabled');
+								$('#dc_install_agent_btn').addClass('disabled btn-success');
+								$('#dc_install_agent_btn').removeClass('btn-primary');
+								$('#dc_install_agent_btn').removeAttr('onclick')
+								$('#dc_remove_agent_btn').removeClass('d-none');
 							} else {
-								$('#btnAgStart').removeClass('d-none');
-								$('#btnAgStop').addClass('d-none');
+								document.getElementById("dc_install_agent_btn").innerHTML = "Install";
+								$('#dc_install_agent_btn').addClass('btn-primary');
+								$('#dc_agent_key').removeAttr('disabled');
+								$('#dc_install_agent_btn').removeClass('disabled btn-success');
+								$('#dc_install_agent_btn').attr('onClick', 'dc_install_agent(event);');
+								$('#dc_remove_agent_btn').addClass('d-none');
+							}
+
+							if( json.dc_instana[0].status ) {
+								// if agent is running, enable stop btn, remove start
+								$('#dc_stop_agent_btn').removeClass('d-none');
+								$('#dc_start_agent_btn').addClass('d-none');
+							} else {
+								// if agent isnt running, disable stop btn, enable start
+								$('#dc_start_agent_btn').removeClass('d-none');
+								$('#dc_stop_agent_btn').addClass('d-none');
+
+								// check if agent installed, if not, disable start button, otherwise enable
+								if( json.dc_instana[0].installed ) {
+									$('#dc_start_agent_btn').removeClass('disabled btn-secondary');
+									$('#dc_start_agent_btn').addClass('btn-success');
+									$('#dc_start_agent_btn').attr('onClick', 'dc_start_agent(event);');
+								} else {
+									$('#dc_start_agent_btn').removeClass('btn-success');
+									$('#dc_start_agent_btn').addClass('disabled btn-secondary');
+									$('#dc_start_agent_btn').removeAttr('onclick')
+								}
+							}
+
+							if( $('#dc_instana_table').bootstrapTable('getOptions').totalRows === undefined) {
+								$('#dc_instana_table').bootstrapTable({ data: json.dc_instana });
+							} else {
+								$('#dc_instana_table').bootstrapTable('load', json.dc_instana );
 							}
 						}
-						$('#agTable').bootstrapTable({
-							data: json.agent
-						});
 					}
-					if( json.loadgen ) {
-						if( json.loadgen.length > 0 ) {
-							if( json.loadgen[0].status.startsWith('Running')) {
-								$('#btnldStop').removeClass('d-none');
-								$('#btnldStart').addClass('d-none');
+					if( json.dc_load ) {
+						if( json.dc_load.length > 0 ) {
+							if( json.dc_load[0].status ) {
+								$('#dc_stop_load_btn').removeClass('d-none');
+								$('#dc_start_load_btn').addClass('d-none');
 							} else {
-								$('#btnldStart').removeClass('d-none');
-								$('#btnldStop').addClass('d-none');
+								$('#dc_start_load_btn').removeClass('d-none');
+								$('#dc_stop_load_btn').addClass('d-none');
 							}
 						}
-						$('#ldTable').bootstrapTable({
-							data: json.loadgen
-						});
+						if( $('#dc_load_table').bootstrapTable('getOptions').totalRows === undefined) {
+							$('#dc_load_table').bootstrapTable({ data: json.dc_load });
+						} else {
+							$('#dc_load_table').bootstrapTable('load', json.dc_load );
+						}
 					}
-				});
+
+
+					if( json.k8s ) {
+						if( $('#k8s_table').bootstrapTable('getOptions').totalRows === undefined) {
+							$('#k8s_table').bootstrapTable({ data: json.k8s });
+						} else {
+							$('#k8s_table').bootstrapTable('load', json.k8s );
+						}
+						$('#kubeconfig').val('')
+
+						if( json.k8s[1].status ) {
+							document.getElementById("k8s_add_config_btn").innerHTML = "Validated";
+							$('#k8s_add_config_btn').attr('disabled', 'disabled');
+							$('#k8s_add_config_btn').addClass('disabled btn-secondary');
+							$('#k8s_add_config_btn').removeClass('btn-success')
+							$('#k8s_add_config_btn').removeAttr('onclick');
+							$('#k8s_del_config_btn').removeClass('d-none')
+							$('#kubeconfig').attr('disabled', 'disabled');
+						} else {
+							document.getElementById("k8s_add_config_btn").innerHTML = "Validate";
+							$('#k8s_add_config_btn').removeAttr('disabled');
+							$('#k8s_add_config_btn').addClass('btn-success')
+							$('#k8s_add_config_btn').removeClass('disabled btn-secondary');
+							$('#k8s_add_config_btn').attr('onClick', 'k8s_add_config(event);');
+							$('#k8s_del_config_btn').addClass('d-none');
+							$('#kubeconfig').removeAttr('disabled');
+						}
+						
+					}
+
+					if( json.k8s_rs ) {
+						if( $('#k8s_rs_table').bootstrapTable('getOptions').totalRows === undefined) {
+							$('#k8s_rs_table').bootstrapTable({ data: json.k8s_rs });
+						} else {
+							$('#k8s_rs_table').bootstrapTable('load', json.k8s_rs );
+						}
+
+						if( json.k8s_rs[0].status ) {
+							$('#k8s_start_load_btn').removeClass('disabled btn-secondary')
+							$('#k8s_start_load_btn').addClass('btn-primary')
+
+							document.getElementById("k8s_start_rs_btn").innerHTML = "Running";
+							document.getElementById("k8s_stop_rs_btn").innerHTML = "Stop";
+							$('#k8s_start_rs_btn').addClass('disabled btn-secondary')
+							$('#k8s_start_rs_btn').removeClass('btn-success')
+
+							$('#k8s_stop_rs_btn').addClass('btn-danger')
+							$('#k8s_stop_rs_btn').removeClass('disabled btn-secondary')
+						} else {
+							$('#k8s_start_load_btn').removeClass('btn-primary')
+							$('#k8s_start_load_btn').addClass('disabled btn-secondary')
+
+							document.getElementById("k8s_start_rs_btn").innerHTML = "Start";
+							document.getElementById("k8s_stop_rs_btn").innerHTML = "Stopped";
+							$('#k8s_start_rs_btn').removeClass('disabled btn-secondary')
+							$('#k8s_start_rs_btn').addClass('btn-success')
+
+							$('#k8s_stop_rs_btn').addClass('disabled btn-secondary')
+							$('#k8s_stop_rs_btn').removeClass('btn-danger')
+						}
+					}
+
+					if( json.k8s_instana ) {
+						document.getElementById("k8s_install_agent_btn").innerHTML = "Installed";
+						$('#k8s_agent_key').attr('disabled', 'disabled');
+						$('#k8s_install_agent_btn').attr('disabled', 'disabled');
+						$('#k8s_install_agent_btn').addClass('disabled btn-success');
+						$('#k8s_install_agent_btn').removeClass('btn-primary');
+						$('#k8s_install_agent_btn').removeAttr('onclick');
+						$('#k8s_remove_agent_btn').removeClass('d-none');
+					} else {
+						document.getElementById("k8s_install_agent_btn").innerHTML = "Install";
+						$('#k8s_agent_key').removeAttr('disabled');
+						$('#k8s_install_agent_btn').removeAttr('disabled');
+						$('#k8s_install_agent_btn').addClass('btn-primary');
+						$('#k8s_install_agent_btn').removeClass('disabled btn-success');
+						$('#k8s_install_agent_btn').attr('onClick', 'k8s_install_agent(event)');
+						$('#k8s_remove_agent_btn').addClass('d-none');
+					}
+
+					if( json.k8s_load ) {
+						if( json.k8s_load.length > 0 ) {
+							if( json.k8s_load[0].status ) {
+								$('#k8s_stop_load_btn').removeClass('d-none');
+								$('#k8s_start_load_btn').addClass('d-none');
+							} else {
+								$('#k8s_start_load_btn').removeClass('d-none');
+								$('#k8s_stop_load_btn').addClass('d-none');
+							}
+						}
+						if( $('#k8s_load_table').bootstrapTable('getOptions').totalRows === undefined) {
+							$('#k8s_load_table').bootstrapTable({ data: json.k8s_load });
+						} else {
+							$('#k8s_load_table').bootstrapTable('load', json.k8s_load );
+						}
+					}
+
+				}); 
 			} else {
 				console.log("Looks like the response wasn't perfect, got status", res.status);
 			}
 		}
+
+		function installedFormatter(index, row) {
+			if( row.installed ) {
+				return '<span style="color: #33c332;"><i class="fas fa-check fa-2x" data-toggle="tooltip" title="' + row.installed + '"></i></span>';
+			} else {
+				return '<span style="color: #ff6b52;"><i class="fas fa-times fa-2x" data-toggle="tooltip" title="' + row.installed + '"></i></span>';
+			}
+		}
 		function statusFormatter(index, row) {
-			console.log(row.status)
-			if( row.status == 'True' || row.status == 'Up' || row.status.startsWith('Running')) {
+			if( row.status ) {
 				return '<span style="color: #33c332;"><i class="fas fa-check fa-2x" data-toggle="tooltip" title="' + row.status + '"></i></span>';
-			} if (row.status == 'N/A') {
-				return row.status;
-			}else {
+			} else {
 				return '<span style="color: #ff6b52;"><i class="fas fa-times fa-2x" data-toggle="tooltip" title="' + row.status + '"></i></span>';
 			}
 		}
